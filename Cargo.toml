@@ -1,0 +1,52 @@
+[package]
+name = "octoapp"
+version = "0.1.0"
+description = "Octoapp is a Rust library for building GitHub Apps"
+
+keywords = ["github", "app", "webhook", "api"]
+
+documentation = "https://docs.rs/octoapp"
+repository = "https://github.com/42ByteLabs/octoapp"
+
+authors = ["GeekMasher"]
+
+rust-version = "1.75"
+edition = "2021"
+
+
+[features]
+default = ["octocrab"]
+
+octocrab = ["dep:octocrab"]
+# Web frameworks
+rocket = ["dep:rocket"]
+
+[dependencies]
+thiserror = "1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1.40"
+jsonwebtoken = "9.3"
+octocrab = { version = "^0.39", optional = true }
+# Signature verification
+hmac = "0.12"
+sha2 = "0.10"
+hex = "0.4.3"
+# Web frameworks
+rocket = { version = "^0.5", features = ["serde_json", "json"], optional = true }
+
+[dev-dependencies]
+octoapp = { path = "./" }
+tokio = { version = "1.39", features = ["full"] }
+anyhow = "1"
+dotenvy = "0.15"
+
+[[example]]
+name = "basic"
+path = "./examples/basic.rs"
+
+[[example]]
+name = "rocket"
+path = "./examples/rocket/src/main.rs"
+required-features = ["rocket"]
+
