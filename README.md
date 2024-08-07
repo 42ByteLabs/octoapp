@@ -37,16 +37,14 @@ cargo add octoapp
 
 ```rust
 use anyhow::Result;
-use octoapp::OctoAppConfig;
+use octoapp::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     // [optional] Load .env file if it exists
-    dotenvy::dotenv().ok();
+    // dotenvy::dotenv().ok();
 
     // Load the configuration (from environment variables)
-    let config = OctoAppConfig::init().build()?;
-    
     // Or, you can set the configuration manually
     let config = OctoAppConfig::init()
         .app_name("My App")
@@ -59,8 +57,16 @@ async fn main() -> Result<()> {
 
     println!("{}", config);
 
-    let octocrab = config.octocrab()?;
-    println!("{:?}", octocrab);
+    // Create a new Octocrab instance
+    let octocrab = config.octocrab();
+
+    if let Ok(client) = octocrab {
+        let repos = client.issues("42ByteLabs", "octoapp")
+            .list()
+            .creator("GeekMasher")
+            .send()
+            .await?;
+    }
 
     Ok(())
 }
