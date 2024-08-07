@@ -34,10 +34,7 @@ async fn webhook(state: &State<OctoAppState>, event: WebHook<Event>) -> (Status,
         }
         _ => {
             println!("Received an unknown event");
-            (
-                Status::BadRequest,
-                "Received an unknown event".to_string(),
-            )
+            (Status::BadRequest, "Received an unknown event".to_string())
         }
     }
 }
@@ -54,7 +51,7 @@ async fn main() -> Result<()> {
     // Create the application state (OctoAppState).
     // This is to manage the configuration and other shared state.
     let octostate = OctoAppState::new(config);
-    
+
     // Build the Rocket instance
     let rocket = rocket::build()
         // Attach the OctoAppState to the Rocket instance
