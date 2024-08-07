@@ -27,6 +27,11 @@ pub enum OctoAppError {
     #[error("Octocrab Error: {0}")]
     OctocrabError(#[from] octocrab::Error),
 
+    /// Octocrab Installation Error
+    #[cfg(feature = "octocrab")]
+    #[error("Octocrab Installation Error: {0}")]
+    OctocrabInstallationError(u64),
+
     /// Serde Error
     #[error("JSON Serde Error: {0}")]
     JsonSerializationError(#[from] serde_json::Error),

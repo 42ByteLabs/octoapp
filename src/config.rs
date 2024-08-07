@@ -25,7 +25,7 @@ type HmacSha256 = Hmac<Sha256>;
 /// OctoApp Configuration
 ///
 /// This struct represents the configuration for the OctoApp
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct OctoAppConfig {
     /// The name of the app
     app_name: Option<String>,
@@ -39,6 +39,10 @@ pub struct OctoAppConfig {
     client_key: Option<jsonwebtoken::EncodingKey>,
     /// Optional webhook secret for verifying incoming webhooks
     webhook_secret: Option<String>,
+
+    /// List of installations for the app
+    #[cfg(feature = "octocrab")]
+    installations: Vec<octocrab::models::Installation>,
 }
 
 impl OctoAppConfig {
@@ -74,19 +78,85 @@ impl OctoAppConfig {
     pub fn webhook_secret(&self) -> Option<&String> {
         self.webhook_secret.as_ref()
     }
-    /// Create an Octocrab instance using the app configuration
+
+    /// Install the app using the app configuration
+    ///
+    /// This will fetch the installations for the app and store them in the
+    /// configuration for later use.
     #[cfg(feature = "octocrab")]
-    pub fn octocrab(&self) -> Result<octocrab::Octocrab, crate::OctoAppError> {
-        use crate::OctoAppError;
+    pub async fn install(&mut self) -> Result<(), crate::OctoAppError> {
+        self.installations = vec![];
+
+        let client = self.octocrab()?;
+        self.installations = client
+            .apps()
+            .installations()
+            .send()
+            .await?
+            .into_iter()
+            .map(|i| i.into())
+            .collect();
+        tracing::debug!(
+            "Installed app with {} installations",
+            self.installations.len()
+        );
+        Ok(())
+    }
+
+    /// Get the installations for the app
+    ///
+    /// This will return an empty list if the app has not been installed.
+    #[cfg(feature = "octocrab")]
+    pub fn installations(&self) -> &Vec<octocrab::models::Installation> {
+        &self.installations
+    }
+
+    /// Get an Octocrab instance using the app configuration
+    #[cfg(feature = "octocrab")]
+    pub async fn octocrab_by_installation(
+        &self,
+        installation_id: impl Into<octocrab::models::InstallationId>,
+    ) -> Result<octocrab::Octocrab, crate::OctoAppError> {
+        let installation_id = installation_id.into();
+        tracing::info!(
+            "Creating Octocrab instance for installation: {:?}",
+            installation_id
+        );
 
         if let Some(key) = &self.client_key {
-            let oc = octocrab::OctocrabBuilder::new()
+            Ok(octocrab::Octocrab::builder()
                 .app(octocrab::models::AppId(self.app_id as u64), key.clone())
-                .build()?;
-            oc.installation(octocrab::models::InstallationId(self.app_id as u64));
-            Ok(oc)
+                .build()?
+                .installation(octocrab::models::InstallationId(*installation_id)))
         } else {
-            Err(OctoAppError::MissingField("Client Key".to_string()))
+            Err(crate::OctoAppError::MissingField(
+                "Client Private Key".to_string(),
+            ))
+        }
+    }
+
+    /// Create an Octocrab instance using the app configuration
+    ///
+    /// If an installation is available, the Octocrab instance will be created
+    /// using the first installation.
+    #[cfg(feature = "octocrab")]
+    pub fn octocrab(&self) -> Result<octocrab::Octocrab, crate::OctoAppError> {
+        if let Some(key) = &self.client_key {
+            // Create an Octocrab instance using the app configuration
+            if let Some(inst) = self.installations.first() {
+                Ok(octocrab::OctocrabBuilder::new()
+                    .app(octocrab::models::AppId(self.app_id as u64), key.clone())
+                    .build()?
+                    .installation(inst.id))
+            } else {
+                Ok(octocrab::OctocrabBuilder::new()
+                    .app(octocrab::models::AppId(self.app_id as u64), key.clone())
+                    .build()?)
+            }
+        } else {
+            Err(crate::OctoAppError::MissingField(
+                "Client Private Key".to_string(),
+            ))
         }
     }
 
@@ -231,6 +301,7 @@ impl TryFrom<OctoAppConfigBuilder> for OctoAppConfig {
             client_secret: value.client_secret,
             client_key,
             webhook_secret,
+            ..Default::default()
         })
     }
 }
@@ -267,13 +338,12 @@ mod tests {
     #[test]
     fn test_signature_verification() {
         let config = OctoAppConfig {
-            app_name: None,
             app_id: 12345,
             client_id: Some("client_id".to_string()),
             client_secret: Some("client_secret".to_string()),
-            client_key: None,
             // This is a test secret, don't use this in production
             webhook_secret: Some("ThisIsASecret".to_string()),
+            ..Default::default()
         };
 
         let data = b"Hello, World!";

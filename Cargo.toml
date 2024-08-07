@@ -1,6 +1,6 @@
 [package]
 name = "octoapp"
-version = "0.2.0"
+version = "0.2.1"
 license = "MIT"
 description = "Octoapp is a Rust library for building GitHub Apps"
 
@@ -15,6 +15,8 @@ authors = ["GeekMasher"]
 rust-version = "1.75"
 edition = "2021"
 
+[package.metadata.docs.rs]
+all-features = true
 
 [features]
 default = ["octocrab"]
