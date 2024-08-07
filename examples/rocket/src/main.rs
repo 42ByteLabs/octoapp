@@ -17,24 +17,24 @@ use octoapp::prelude::*;
 #[post("/", data = "<event>")]
 async fn webhook(state: &State<OctoAppState>, event: WebHook<Event>) -> (Status, String) {
     // Get the Octocrab instance from the state
-    let _octocrab = state.config.octocrab();
+    let octo = event.octocrab(state).await.unwrap();
+    tracing::info!("Octocrab instance: {:?}", octo);
 
     match event.into_inner() {
-        // Handle the ping event (just return "pong")
-        Event::Ping(_) => {
-            println!("Received ping event");
-            (Status::Ok, "pong".to_string())
-        }
-        // Handle the push event
-        //
-        // https://docs.github.com/en/webhooks/webhook-events-and-payloads#push
-        Event::Push(push) => {
-            println!("Received push event: {:?}", push);
-            (Status::Ok, "Received push event".to_string())
+        Event::Issues(issues) => {
+            tracing::info!("Received an issue event: {:?}", issues.issue.id);
+
+            // Comment on the issue
+            octo.issues("42ByteLabs", "octoapp")
+                .create_comment(issues.issue.number, "Hello from OctoApp!")
+                .await
+                .unwrap();
+
+            (Status::Ok, "Received an issue event".to_string())
         }
         _ => {
-            println!("Received an unknown event");
-            (Status::BadRequest, "Received an unknown event".to_string())
+            tracing::warn!("Received an unknown event");
+            (Status::Ok, "Received an unknown event".to_string())
         }
     }
 }
@@ -45,8 +45,23 @@ async fn main() -> Result<()> {
     dotenvy::dotenv()?;
 
     // Load the configuration (from environment variables)
-    let config = OctoAppConfig::init().build()?;
-    println!("{}", config);
+    let mut config = OctoAppConfig::init().build()?;
+    // Install the configuration and fetch all the installations
+    // of the GitHub App (if any).
+    config.install().await?;
+
+    // This will create an Octocrab instance with the required authentication
+    // information. Note, this is done after `.install()` so if an installation
+    // is found, the Octocrab instance will be created with the installation token.
+    let client = config.octocrab()?;
+
+    let repos = client
+        .orgs("42ByteLabs")
+        .list_repos()
+        .send()
+        .await?
+        .take_items();
+    tracing::info!("Monitoring Repository Count :: {:?}", repos.len());
 
     // Create the application state (OctoAppState).
     // This is to manage the configuration and other shared state.
