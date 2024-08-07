@@ -1,0 +1,9 @@
+[package]
+name = "rocket"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+octoapp = { path = "../octoapp", features = ["rocket"] }
+tokio = { version = "1", features = ["full"] }
+rocket = { version = "0.5" }
