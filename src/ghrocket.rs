@@ -46,11 +46,34 @@ impl From<crate::OctoAppConfig> for OctoAppState {
     }
 }
 
+/// Deserialize a WebHook from a string to extract the installation ID
+#[derive(serde::Deserialize)]
+#[non_exhaustive]
+struct ReqBlob {
+    installation: InsBlob,
+}
+
+/// Deserialize a WebHook from a string to extract the installation ID
+#[derive(serde::Deserialize)]
+#[non_exhaustive]
+struct InsBlob {
+    id: u64,
+}
+
 /// Deserialize a WebHook from a string for Rocket
 impl<'r, T: serde::Deserialize<'r>> WebHook<T> {
     fn from_str(s: &'r str) -> Result<Self, crate::OctoAppError> {
+        // TODO: This is a little hacky, but it works 🤷
+        // We do deserialization in two steps here to extract the
+        // installation ID and the payload.
+
+        let id: u64 = match serde_json::from_str::<ReqBlob>(s) {
+            Ok(installation) => installation.installation.id,
+            Err(_) => 0,
+        };
+
         serde_json::from_str(s)
-            .map(Self)
+            .map(|value| WebHook(value, id))
             .map_err(|e| crate::OctoAppError::from(e))
     }
 
@@ -107,23 +130,6 @@ impl<'r, T: serde::Deserialize<'r>> FromData<'r> for WebHook<T> {
                 ))
             }
         };
-
-        // // TODO: Is this cloning?
-        // let body: String = match data.open(u8::MAX.into()).into_string().await {
-        //     Ok(data) => data.to_string(),
-        //     Err(_) => {
-        //         return Outcome::Error((
-        //             rocket::http::Status::InternalServerError,
-        //             OctoAppError::UnknownError,
-        //         ))
-        //     }
-        // };
-
-        // Parse the event
-        // let event_name = req
-        //     .headers()
-        //     .get_one("X-GitHub-Event")
-        //     .expect("Missing X-GitHub-Event header");
 
         match Self::from_data(req, data, appstate, signature).await {
             Ok(value) => Outcome::Success(value),

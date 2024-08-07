@@ -6,7 +6,7 @@ pub mod payloads;
 
 /// A wrapper around a webhook payload.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct WebHook<T>(pub T);
+pub struct WebHook<T>(pub T, pub u64);
 
 impl<T> WebHook<T> {
     /// Consumes the wrapper and returns the inner payload.
@@ -15,13 +15,40 @@ impl<T> WebHook<T> {
     /// ```rust
     /// # use octoapp::WebHook;
     /// let string = "Hello, world!".to_string();
-    /// let webhook = WebHook(string);
+    /// let webhook = WebHook(string, 0);
     /// let inner = webhook.into_inner();
-    /// assert_eq!(inner, "Hello, world!");
+    /// # assert_eq!(inner, "Hello, world!");
     /// ```
     #[inline(always)]
     pub fn into_inner(self) -> T {
         self.0
+    }
+
+    /// Get the Installation from the WebHook
+    ///
+    /// # Example
+    /// ```rust
+    /// # use octoapp::WebHook;
+    /// let string = "Hello, world!".to_string();
+    /// let webhook = WebHook(string, 12345);
+    /// let inst = webhook.installation();
+    /// # assert_eq!(inst, 12345);
+    /// ```
+    pub fn installation(&self) -> u64 {
+        self.1
+    }
+
+    /// Get a reference to the Installation from the WebHook Installation
+    #[cfg(feature = "rocket")]
+    pub async fn octocrab(
+        &self,
+        appstate: &rocket::State<crate::ghrocket::OctoAppState>,
+    ) -> Result<octocrab::Octocrab, crate::OctoAppError> {
+        let id = self.installation();
+        if id == 0 {
+            return Err(crate::OctoAppError::OctocrabInstallationError(id));
+        }
+        appstate.config.octocrab_by_installation(id).await
     }
 }
 
