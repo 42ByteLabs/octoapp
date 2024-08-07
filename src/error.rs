@@ -14,6 +14,10 @@ pub enum OctoAppError {
     #[error("Signature Error: {0}")]
     SignatureError(String),
 
+    /// Webhook Secret Error
+    #[error("Webhook Secret Error: {0}")]
+    WebhookSecretError(String),
+
     /// IO Error
     #[error("IO Error: {0}")]
     IoError(#[from] std::io::Error),
