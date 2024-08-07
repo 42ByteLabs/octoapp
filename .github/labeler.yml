@@ -1,0 +1,18 @@
+docs:
+- changed-files:
+  - any-glob-to-any-file: '**/*.md'
+
+action:
+- changed-files:
+  - any-glob-to-any-file: '.github/action/*'
+
+code:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'src/'
+
+examples:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'examples/'
+
