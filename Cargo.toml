@@ -19,7 +19,7 @@ default = ["octocrab"]
 
 octocrab = ["dep:octocrab"]
 # Web frameworks
-rocket = ["dep:rocket"]
+rocket = ["dep:rocket", "octocrab"]
 
 [dependencies]
 thiserror = "1"

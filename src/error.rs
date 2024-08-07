@@ -19,6 +19,7 @@ pub enum OctoAppError {
     IoError(#[from] std::io::Error),
 
     /// Octocrab Error
+    #[cfg(feature = "octocrab")]
     #[error("Octocrab Error: {0}")]
     OctocrabError(#[from] octocrab::Error),
 
