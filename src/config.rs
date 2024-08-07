@@ -203,7 +203,7 @@ impl TryFrom<OctoAppConfigBuilder> for OctoAppConfig {
                     client_key.clone().as_bytes(),
                 )?)
             } else {
-                return Err(crate::OctoAppError::MissingField("Client Key".to_string()));
+                None
             };
 
         Ok(OctoAppConfig {
