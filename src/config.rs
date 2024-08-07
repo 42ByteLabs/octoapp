@@ -30,11 +30,11 @@ pub struct OctoAppConfig {
     /// The name of the app
     app_name: Option<String>,
     /// The App ID
-    app_id: usize,
+    app_id: u32,
     /// The client id for the app
-    client_id: String,
+    client_id: Option<String>,
     /// The secret for the app
-    client_secret: String,
+    client_secret: Option<String>,
     /// The private key for the app
     client_key: Option<jsonwebtoken::EncodingKey>,
     /// Optional webhook secret for verifying incoming webhooks
@@ -55,16 +55,16 @@ impl OctoAppConfig {
         self.app_name.as_ref()
     }
     /// Get the app id
-    pub fn app_id(&self) -> usize {
+    pub fn app_id(&self) -> u32 {
         self.app_id
     }
     /// Get the client id
-    pub fn client_id(&self) -> &str {
-        &self.client_id
+    pub fn client_id(&self) -> Option<&String> {
+        self.client_id.as_ref()
     }
     /// Get the client secret
-    pub fn client_secret(&self) -> &str {
-        &self.client_secret
+    pub fn client_secret(&self) -> Option<&String> {
+        self.client_secret.as_ref()
     }
     /// Get the client key
     pub fn client_key(&self) -> Option<&jsonwebtoken::EncodingKey> {
@@ -138,7 +138,7 @@ impl Display for OctoAppConfig {
 #[derive(Debug, Clone)]
 pub struct OctoAppConfigBuilder {
     app_name: Option<String>,
-    app_id: Option<usize>,
+    app_id: Option<u32>,
 
     client_id: Option<String>,
     client_secret: Option<String>,
@@ -150,28 +150,28 @@ pub struct OctoAppConfigBuilder {
 
 impl OctoAppConfigBuilder {
     /// Set the app name
-    pub fn app_name(mut self, app_name: &str) -> Self {
-        self.app_name = Some(app_name.to_string());
+    pub fn app_name(mut self, app_name: impl Into<String>) -> Self {
+        self.app_name = Some(app_name.into());
         self
     }
     /// Set the app id
     pub fn app_id(mut self, app_id: usize) -> Self {
-        self.app_id = Some(app_id);
+        self.app_id = Some(app_id as u32);
         self
     }
     /// Set the client id
-    pub fn client_id(mut self, client_id: &str) -> Self {
-        self.client_id = Some(client_id.to_string());
+    pub fn client_id(mut self, client_id: impl Into<String>) -> Self {
+        self.client_id = Some(client_id.into());
         self
     }
     /// Set the client secret
-    pub fn client_secret(mut self, client_secret: &str) -> Self {
-        self.client_secret = Some(client_secret.to_string());
+    pub fn client_secret(mut self, client_secret: impl Into<String>) -> Self {
+        self.client_secret = Some(client_secret.into());
         self
     }
     /// Set the client key
-    pub fn client_key(mut self, client_key: &str) -> Self {
-        self.client_key = Some(client_key.to_string());
+    pub fn client_key(mut self, client_key: impl Into<String>) -> Self {
+        self.client_key = Some(client_key.into());
         self
     }
     /// Set the client key path
@@ -180,8 +180,8 @@ impl OctoAppConfigBuilder {
         self
     }
     /// Set the webhook secret
-    pub fn webhook_secret(mut self, webhook_secret: &str) -> Self {
-        self.webhook_secret = Some(webhook_secret.to_string());
+    pub fn webhook_secret(mut self, webhook_secret: impl Into<String>) -> Self {
+        self.webhook_secret = Some(webhook_secret.into());
         self
     }
     /// Build the OctoAppConfig
@@ -211,14 +211,8 @@ impl TryFrom<OctoAppConfigBuilder> for OctoAppConfig {
             app_id: value
                 .app_id
                 .ok_or(crate::OctoAppError::MissingField("AppID".to_string()))?,
-            client_id: value
-                .client_id
-                .ok_or(crate::OctoAppError::MissingField("Client ID".to_string()))?,
-            client_secret: value
-                .client_secret
-                .ok_or(crate::OctoAppError::MissingField(
-                    "Client Secret".to_string(),
-                ))?,
+            client_id: value.client_id,
+            client_secret: value.client_secret,
             client_key,
             webhook_secret: value.webhook_secret,
         })
@@ -228,7 +222,7 @@ impl TryFrom<OctoAppConfigBuilder> for OctoAppConfig {
 impl Default for OctoAppConfigBuilder {
     fn default() -> Self {
         let app_name: Option<String> = std::env::var("APP_NAME").ok();
-        let app_id: Option<usize> = std::env::var("APP_ID").ok().map(|s| s.parse().unwrap());
+        let app_id: Option<u32> = std::env::var("APP_ID").ok().map(|s| s.parse().unwrap());
 
         let client_id: Option<String> = std::env::var("CLIENT_ID").ok();
         let client_secret: Option<String> = std::env::var("CLIENT_SECRET").ok();
@@ -259,8 +253,8 @@ mod tests {
         let config = OctoAppConfig {
             app_name: None,
             app_id: 12345,
-            client_id: "client_id".to_string(),
-            client_secret: "client_secret".to_string(),
+            client_id: Some("client_id".to_string()),
+            client_secret: Some("client_secret".to_string()),
             client_key: None,
             // This is a test secret, don't use this in production
             webhook_secret: Some("ThisIsASecret".to_string()),
