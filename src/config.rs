@@ -186,6 +186,7 @@ impl OctoAppConfigBuilder {
     }
     /// Build the OctoAppConfig
     pub fn build(self) -> Result<OctoAppConfig, crate::OctoAppError> {
+        tracing::debug!("Building OctoAppConfig from OctoAppConfigBuilder");
         self.try_into()
     }
 }
@@ -206,6 +207,21 @@ impl TryFrom<OctoAppConfigBuilder> for OctoAppConfig {
                 None
             };
 
+        let webhook_secret: Option<String> = if let Some(secret) = &value.webhook_secret {
+            // Check secret length (less than 8 error, less than 16 warning)
+            if secret.len() < 8 {
+                return Err(crate::OctoAppError::WebhookSecretError(format!(
+                    "Webhook secret is less than 8 characters: {}",
+                    secret.len()
+                )));
+            } else if secret.len() < 16 {
+                tracing::warn!("Webhook secret is less than 16 characters");
+            }
+            Some(secret.to_string())
+        } else {
+            None
+        };
+
         Ok(OctoAppConfig {
             app_name: value.app_name,
             app_id: value
@@ -214,7 +230,7 @@ impl TryFrom<OctoAppConfigBuilder> for OctoAppConfig {
             client_id: value.client_id,
             client_secret: value.client_secret,
             client_key,
-            webhook_secret: value.webhook_secret,
+            webhook_secret,
         })
     }
 }
