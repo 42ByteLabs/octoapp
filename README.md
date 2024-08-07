@@ -72,6 +72,10 @@ async fn main() -> Result<()> {
 }
 ```
 
+## 📚 Documentation
+
+You can find the documentation for this project on [docs.rs][docs].
+
 ## ♥️  Maintainers / Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -99,7 +103,6 @@ Please refer to [MIT][license] for the full terms.
 [license]: ./LICENSE
 [crates-io]: https://crates.io/crates/octoapp
 [docs]: https://docs.rs/geekorm/latest/octoapp
-[rust-lang]: https://www.rust-lang.org/
 [semver]: https://semver.org/
 [github]: https://github.com/42ByteLabs/octoapp
 [github-issues]: https://github.com/42ByteLabs/octoapp/issues
