@@ -1,8 +1,10 @@
 [package]
 name = "octoapp"
 version = "0.1.0"
+license = "MIT"
 description = "Octoapp is a Rust library for building GitHub Apps"
 
+categories = ["web-programming"]
 keywords = ["github", "app", "webhook", "api"]
 
 documentation = "https://docs.rs/octoapp"
