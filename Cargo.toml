@@ -1,6 +1,6 @@
 [package]
 name = "octoapp"
-version = "0.2.1"
+version = "0.2.2"
 license = "MIT"
 description = "Octoapp is a Rust library for building GitHub Apps"
 
@@ -48,7 +48,7 @@ dotenvy = "0.15"
 [[example]]
 name = "basic"
 path = "./examples/basic.rs"
-required-features = []
+required-features = ["octocrab"]
 
 [[example]]
 name = "rocket"
