@@ -25,6 +25,10 @@ use rocket::{
     State,
 };
 
+pub mod errors;
+
+pub use errors::OctoAppResult;
+
 /// The application state for the OctoApp
 ///
 /// This is used to manage the configuration and other shared state.
@@ -144,3 +148,9 @@ impl<'r, T: serde::Serialize> rocket::response::Responder<'r, 'r> for WebHook<T>
             .respond_to(req)
     }
 }
+
+// impl<'r, T> rocket::response::Responder<'r, 'r> for Result<T, OctoAppError> {
+//     fn respond_to(self, request: &'r Request<'_>) -> rocket::response::Result<'r> {
+//         Json(json!({ "status": "success"})).respond_to(request)
+//     }
+// }

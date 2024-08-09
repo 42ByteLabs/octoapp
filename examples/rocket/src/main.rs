@@ -2,10 +2,10 @@
 extern crate rocket;
 
 use anyhow::Result;
-use rocket::{http::Status, State};
+use rocket::State;
 
 // Import the prelude module to get all the necessary imports
-use octoapp::prelude::*;
+use octoapp::{ghrocket::OctoAppResult, prelude::*};
 
 /// The webhook route for GitHub events
 ///
@@ -15,7 +15,7 @@ use octoapp::prelude::*;
 /// You can either use `WebHook<Event>` to get all events, or use a specific
 /// event type like `WebHook<PingEvent>` to only get ping events.
 #[post("/", data = "<event>")]
-async fn webhook(state: &State<OctoAppState>, event: WebHook<Event>) -> (Status, String) {
+async fn webhook(state: &State<OctoAppState>, event: WebHook<Event>) -> OctoAppResult<()> {
     // Get the Octocrab instance from the state
     let octo = event.octocrab(state).await.unwrap();
     tracing::info!("Octocrab instance: {:?}", octo);
@@ -30,11 +30,11 @@ async fn webhook(state: &State<OctoAppState>, event: WebHook<Event>) -> (Status,
                 .await
                 .unwrap();
 
-            (Status::Ok, "Received an issue event".to_string())
+            Ok(())
         }
         _ => {
             tracing::warn!("Received an unknown event");
-            (Status::Ok, "Received an unknown event".to_string())
+            Err(OctoAppError::UnknownError)
         }
     }
 }
