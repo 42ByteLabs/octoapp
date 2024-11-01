@@ -29,9 +29,9 @@ rocket = ["dep:rocket", "octocrab"]
 thiserror = "1"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
-tracing = "0.1.40"
+tracing = "0.1"
 jsonwebtoken = "9.3"
-octocrab = { version = "^0.39", optional = true }
+octocrab = { version = "^0.41", optional = true }
 # Signature verification
 hmac = "0.12"
 sha2 = "0.10"

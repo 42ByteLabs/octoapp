@@ -127,7 +127,7 @@ impl OctoAppConfig {
             Ok(octocrab::Octocrab::builder()
                 .app(octocrab::models::AppId(self.app_id as u64), key.clone())
                 .build()?
-                .installation(octocrab::models::InstallationId(*installation_id)))
+                .installation(octocrab::models::InstallationId(*installation_id))?)
         } else {
             Err(crate::OctoAppError::MissingField(
                 "Client Private Key".to_string(),
@@ -147,7 +147,7 @@ impl OctoAppConfig {
                 Ok(octocrab::OctocrabBuilder::new()
                     .app(octocrab::models::AppId(self.app_id as u64), key.clone())
                     .build()?
-                    .installation(inst.id))
+                    .installation(inst.id)?)
             } else {
                 Ok(octocrab::OctocrabBuilder::new()
                     .app(octocrab::models::AppId(self.app_id as u64), key.clone())
