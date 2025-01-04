@@ -1,6 +1,6 @@
 [package]
 name = "octoapp"
-version = "0.2.3"
+version = "0.2.4"
 license = "MIT"
 description = "Octoapp is a Rust library for building GitHub Apps"
 
@@ -26,12 +26,12 @@ octocrab = ["dep:octocrab"]
 rocket = ["dep:rocket", "octocrab"]
 
 [dependencies]
-thiserror = "1"
+thiserror = "^2.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 tracing = "0.1"
 jsonwebtoken = "9.3"
-octocrab = { version = "^0.41", optional = true }
+octocrab = { version = "^0.42", optional = true }
 # Signature verification
 hmac = "0.12"
 sha2 = "0.10"
