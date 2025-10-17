@@ -30,14 +30,17 @@ thiserror = "^2.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 tracing = "0.1"
-jsonwebtoken = "9.3"
-octocrab = { version = "^0.46", optional = true }
+jsonwebtoken = { version = "10.0", features = ["rust_crypto"] }
+octocrab = { version = "^0.47", optional = true }
 # Signature verification
 hmac = "0.12"
 sha2 = "0.10"
 hex = "0.4.3"
 # Web frameworks
-rocket = { version = "^0.5", features = ["serde_json", "json"], optional = true }
+rocket = { version = "^0.5", features = [
+    "serde_json",
+    "json",
+], optional = true }
 
 [dev-dependencies]
 octoapp = { path = "./" }
@@ -54,4 +57,3 @@ required-features = ["octocrab"]
 name = "rocket"
 path = "./examples/rocket/src/main.rs"
 required-features = ["rocket"]
-
