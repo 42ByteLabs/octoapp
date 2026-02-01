@@ -11,7 +11,7 @@ async fn main() -> Result<()> {
 
     let octocrab = config.octocrab();
     if let Ok(client) = octocrab {
-        client.installation(octocrab::models::InstallationId(config.app_id() as u64));
+        let _ = client.installation(octocrab::models::InstallationId(config.app_id() as u64));
         println!("{:?}", client);
 
         let org = client.orgs("42ByteLabs").get().await?;

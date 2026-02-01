@@ -23,10 +23,13 @@ pub use error::OctoAppError;
 pub use events::WebHook;
 
 #[cfg(feature = "rocket")]
-pub use crate::ghrocket::{OctoAppResult, OctoAppState};
+pub use crate::ghrocket::OctoAppState;
+
+#[cfg(all(feature = "rocket", not(feature = "hyper")))]
+pub use crate::ghrocket::OctoAppResult;
 
 #[cfg(feature = "hyper")]
-pub use crate::ghhyper::{OctoAppResult, HyperWebhookHandler};
+pub use crate::ghhyper::{HyperWebhookHandler, OctoAppResult};
 
 #[doc(hidden)]
 pub mod prelude {
@@ -40,8 +43,11 @@ pub mod prelude {
     pub use crate::events::payloads::*;
 
     #[cfg(feature = "rocket")]
-    pub use crate::ghrocket::{OctoAppResult, OctoAppState};
+    pub use crate::ghrocket::OctoAppState;
+
+    #[cfg(all(feature = "rocket", not(feature = "hyper")))]
+    pub use crate::ghrocket::OctoAppResult;
 
     #[cfg(feature = "hyper")]
-    pub use crate::ghhyper::{OctoAppResult, HyperWebhookHandler};
+    pub use crate::ghhyper::{HyperWebhookHandler, OctoAppResult};
 }

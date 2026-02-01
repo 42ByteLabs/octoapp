@@ -78,7 +78,7 @@ impl<'r, T: serde::Deserialize<'r>> WebHook<T> {
 
         serde_json::from_str(s)
             .map(|value| WebHook(value, id))
-            .map_err(|e| crate::OctoAppError::from(e))
+            .map_err(crate::OctoAppError::from)
     }
 
     async fn from_data(
