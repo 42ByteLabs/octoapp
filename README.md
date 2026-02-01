@@ -81,10 +81,6 @@ Install the Hyper features by using:
 
 ```bash
 cargo add octoapp -F hyper
-````
-```
-```
-```
 ```
 
 Once installed, check out [the example here](./examples/hyper/) to see how to implement it. 
@@ -96,7 +92,6 @@ To install the Rocket features, use the following command:
 ```bash
 cargo add octoapp -F rocket
 ```
-
 
 Once installed, check out [the example here](./examples/rocket/) to see how to implement it. 
 
