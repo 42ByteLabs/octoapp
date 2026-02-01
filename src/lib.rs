@@ -14,13 +14,22 @@ pub mod events;
 #[cfg(feature = "rocket")]
 pub mod ghrocket;
 
+#[cfg(feature = "hyper")]
+pub mod ghhyper;
+
 pub use config::OctoAppConfig;
 pub use error::OctoAppError;
 #[cfg(feature = "octocrab")]
 pub use events::WebHook;
 
 #[cfg(feature = "rocket")]
-pub use crate::ghrocket::{OctoAppResult, OctoAppState};
+pub use crate::ghrocket::OctoAppState;
+
+#[cfg(all(feature = "rocket", not(feature = "hyper")))]
+pub use crate::ghrocket::OctoAppResult;
+
+#[cfg(feature = "hyper")]
+pub use crate::ghhyper::{HyperWebhookHandler, OctoAppResult};
 
 #[doc(hidden)]
 pub mod prelude {
@@ -34,5 +43,11 @@ pub mod prelude {
     pub use crate::events::payloads::*;
 
     #[cfg(feature = "rocket")]
-    pub use crate::ghrocket::{OctoAppResult, OctoAppState};
+    pub use crate::ghrocket::OctoAppState;
+
+    #[cfg(all(feature = "rocket", not(feature = "hyper")))]
+    pub use crate::ghrocket::OctoAppResult;
+
+    #[cfg(feature = "hyper")]
+    pub use crate::ghhyper::{HyperWebhookHandler, OctoAppResult};
 }

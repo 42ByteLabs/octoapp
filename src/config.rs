@@ -94,7 +94,6 @@ impl OctoAppConfig {
             .send()
             .await?
             .into_iter()
-            .map(|i| i.into())
             .collect();
         tracing::debug!(
             "Installed app with {} installations",
@@ -180,7 +179,7 @@ impl OctoAppConfig {
                     hex_result
                 );
 
-                return hex_result == hex_signature;
+                hex_result == hex_signature
             } else {
                 false
             }

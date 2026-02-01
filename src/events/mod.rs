@@ -57,6 +57,7 @@ impl<T> WebHook<T> {
 /// This enum represents the various events that GitHub sends to the webhook
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
 pub enum Event {
     /// Branch Protection Rule Event
     BranchProtectionRule(payloads::BranchProtectionRuleEvent),
