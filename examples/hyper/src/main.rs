@@ -8,7 +8,7 @@ async fn main() -> Result<()> {
 
     // Load the configuration (from environment variables)
     let mut config = OctoAppConfig::init().build()?;
-    
+
     // Install the configuration and fetch all the installations
     // of the GitHub App (if any).
     config.install().await?;
@@ -27,11 +27,13 @@ async fn main() -> Result<()> {
     println!("Monitoring Repository Count :: {:?}", repos.len());
 
     // Create the webhook handler
-    let handler = HyperWebhookHandler::new(config)
-        .path("/github")
-        .on_event(|webhook: WebHook<Event>| async move {
-            println!("Received webhook event from installation {}", webhook.installation());
-            
+    let handler = HyperWebhookHandler::new(config).path("/github").on_event(
+        |webhook: WebHook<Event>| async move {
+            println!(
+                "Received webhook event from installation {}",
+                webhook.installation()
+            );
+
             match webhook.into_inner() {
                 Event::Ping(ping) => {
                     println!("Received ping event: {:?}", ping.hook_id);
@@ -52,10 +54,11 @@ async fn main() -> Result<()> {
                     Ok(())
                 }
             }
-        });
+        },
+    );
 
     println!("Starting hyper webhook server on http://127.0.0.1:4242/github");
-    
+
     // Start the server
     handler.serve("127.0.0.1:4242").await?;
 

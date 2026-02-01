@@ -1,8 +1,8 @@
 //! Error handling for Hyper integration
 
 use crate::OctoAppError;
-use hyper::{body::Bytes, Response, StatusCode};
 use http_body_util::Full;
+use hyper::{body::Bytes, Response, StatusCode};
 
 /// Result type for Hyper handlers
 pub type OctoAppResult<T> = Result<T, OctoAppError>;

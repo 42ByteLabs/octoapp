@@ -117,15 +117,12 @@ impl<T: serde::de::DeserializeOwned + Send + 'static> HyperWebhookHandler<T> {
     /// # }
     /// ```
     pub async fn serve(self, addr: impl Into<String>) -> Result<(), OctoAppError> {
-        let addr: SocketAddr = addr
-            .into()
-            .parse()
-            .map_err(|e: std::net::AddrParseError| {
-                OctoAppError::IoError(std::io::Error::new(
-                    std::io::ErrorKind::InvalidInput,
-                    e.to_string(),
-                ))
-            })?;
+        let addr: SocketAddr = addr.into().parse().map_err(|e: std::net::AddrParseError| {
+            OctoAppError::IoError(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                e.to_string(),
+            ))
+        })?;
 
         let listener = tokio::net::TcpListener::bind(addr).await?;
 
