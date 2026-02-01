@@ -1,6 +1,6 @@
 [package]
 name = "octoapp"
-version = "0.3.2"
+version = "0.4.0"
 license = "MIT"
 description = "Octoapp is a Rust library for building GitHub Apps"
 
