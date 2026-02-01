@@ -164,7 +164,7 @@ impl<T: serde::de::DeserializeOwned + Send + 'static> HyperWebhookHandler<T> {
             return Ok(Response::builder()
                 .status(StatusCode::NOT_FOUND)
                 .body(Full::new(Bytes::from("Not Found")))
-                .unwrap());
+                .expect("Failed to build NOT_FOUND response"));
         }
 
         // Extract signature header
@@ -175,14 +175,14 @@ impl<T: serde::de::DeserializeOwned + Send + 'static> HyperWebhookHandler<T> {
                     return Ok(Response::builder()
                         .status(StatusCode::BAD_REQUEST)
                         .body(Full::new(Bytes::from("Invalid signature header")))
-                        .unwrap());
+                        .expect("Failed to build BAD_REQUEST response"));
                 }
             },
             None => {
                 return Ok(Response::builder()
                     .status(StatusCode::UNAUTHORIZED)
                     .body(Full::new(Bytes::from("Missing X-Hub-Signature-256 header")))
-                    .unwrap());
+                    .expect("Failed to build UNAUTHORIZED response"));
             }
         };
 
@@ -193,7 +193,7 @@ impl<T: serde::de::DeserializeOwned + Send + 'static> HyperWebhookHandler<T> {
                 return Ok(Response::builder()
                     .status(StatusCode::BAD_REQUEST)
                     .body(Full::new(Bytes::from("Failed to read body")))
-                    .unwrap());
+                    .expect("Failed to build BAD_REQUEST response"));
             }
         };
 
@@ -206,7 +206,7 @@ impl<T: serde::de::DeserializeOwned + Send + 'static> HyperWebhookHandler<T> {
             return Ok(Response::builder()
                 .status(StatusCode::UNAUTHORIZED)
                 .body(Full::new(Bytes::from("Signature verification failed")))
-                .unwrap());
+                .expect("Failed to build UNAUTHORIZED response"));
         }
 
         // Parse webhook
@@ -216,7 +216,7 @@ impl<T: serde::de::DeserializeOwned + Send + 'static> HyperWebhookHandler<T> {
                 return Ok(Response::builder()
                     .status(StatusCode::BAD_REQUEST)
                     .body(Full::new(Bytes::from("Invalid UTF-8")))
-                    .unwrap());
+                    .expect("Failed to build BAD_REQUEST response"));
             }
         };
 
@@ -226,8 +226,8 @@ impl<T: serde::de::DeserializeOwned + Send + 'static> HyperWebhookHandler<T> {
                 tracing::error!("Failed to parse webhook: {:?}", e);
                 return Ok(Response::builder()
                     .status(StatusCode::BAD_REQUEST)
-                    .body(Full::new(Bytes::from(format!("Invalid webhook payload: {}", e))))
-                    .unwrap());
+                    .body(Full::new(Bytes::from("Invalid webhook payload")))
+                    .expect("Failed to build BAD_REQUEST response"));
             }
         };
 
@@ -238,14 +238,14 @@ impl<T: serde::de::DeserializeOwned + Send + 'static> HyperWebhookHandler<T> {
                     return Ok(Response::builder()
                         .status(StatusCode::OK)
                         .body(Full::new(Bytes::from("OK")))
-                        .unwrap());
+                        .expect("Failed to build OK response"));
                 }
                 Err(e) => {
                     tracing::error!("Handler error: {:?}", e);
                     return Ok(Response::builder()
                         .status(StatusCode::INTERNAL_SERVER_ERROR)
-                        .body(Full::new(Bytes::from(format!("Handler error: {}", e))))
-                        .unwrap());
+                        .body(Full::new(Bytes::from("Internal server error")))
+                        .expect("Failed to build INTERNAL_SERVER_ERROR response"));
                 }
             }
         }
@@ -253,7 +253,7 @@ impl<T: serde::de::DeserializeOwned + Send + 'static> HyperWebhookHandler<T> {
         Ok(Response::builder()
             .status(StatusCode::OK)
             .body(Full::new(Bytes::from("OK")))
-            .unwrap())
+            .expect("Failed to build OK response"))
     }
 }
 

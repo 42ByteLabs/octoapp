@@ -19,5 +19,5 @@ pub fn error_to_response(error: &OctoAppError) -> Response<Full<Bytes>> {
     Response::builder()
         .status(status)
         .body(Full::new(Bytes::from(message)))
-        .unwrap()
+        .expect("Failed to build error response")
 }
