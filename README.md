@@ -22,8 +22,10 @@ It provides a simple interface for creating GitHub Apps and [handling webhook ev
 - Focus on simplicity and ease of use.
 - Built-in support for handling GitHub webhook events.
 - Uses `octocrab` for interacting with the GitHub API.
-- Supports `rocket` web framework for handling incoming webhook events.
-  - feature: `rocket`
+- Support for webhook events.
+- Supported Libraries and Framework 
+  - [`rocket`](https://rocket.rs/): A web framework for Rust gear Rust that makes it simple to write fast, type-safe, secure web applications
+  - [`hyoer`](https://hyper.rs/): Blazing fast HTTP server
 
 ## 🚀 Quick Start
 
@@ -71,6 +73,32 @@ async fn main() -> Result<()> {
     Ok(())
 }
 ```
+
+
+### Hyper
+
+Install the Hyper features by using:
+
+```bash
+cargo add octoapp -F hyper
+````
+```
+```
+```
+```
+
+Once installed, check out [the example here](./examples/hyper/) to see how to implement it. 
+
+### Rocket
+
+To install the Rocket features, use the following command:
+
+```bash
+cargo add octoapp -F rocket
+```
+
+
+Once installed, check out [the example here](./examples/rocket/) to see how to implement it. 
 
 ## 📚 Documentation
 
