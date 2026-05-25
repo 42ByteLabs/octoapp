@@ -42,7 +42,7 @@ impl<T> WebHook<T> {
     #[cfg(feature = "rocket")]
     pub async fn octocrab(
         &self,
-        appstate: &rocket::State<crate::ghrocket::OctoAppState>,
+        appstate: &rocket::State<crate::octorocket::OctoAppState>,
     ) -> Result<octocrab::Octocrab, crate::OctoAppError> {
         let id = self.installation();
         if id == 0 {
