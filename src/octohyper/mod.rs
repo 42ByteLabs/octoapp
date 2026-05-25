@@ -32,13 +32,11 @@
 //! # }
 //! ```
 
-use crate::{events::WebHook, OctoAppConfig, OctoAppError};
 use http_body_util::{BodyExt, Full};
 use hyper::{body::Bytes, body::Incoming, Method, Request, Response, StatusCode};
-use std::future::Future;
-use std::net::SocketAddr;
-use std::pin::Pin;
-use std::sync::Arc;
+use std::{future::Future, net::SocketAddr, pin::Pin, sync::Arc};
+
+use crate::{events::WebHook, OctoAppConfig, OctoAppError};
 
 pub mod errors;
 
