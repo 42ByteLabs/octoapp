@@ -33,7 +33,7 @@ serde_json = "1"
 tracing = "0.1"
 jsonwebtoken = { version = "10.4", features = ["rust_crypto"] }
 tokio = { version = "1", features = ["net", "rt"] }
-octocrab = { version = "^0.51", optional = true }
+octocrab = { version = "^0.53", optional = true }
 # Signature verification
 hmac = "0.13"
 sha2 = "0.11"
