@@ -5,7 +5,7 @@ use anyhow::Result;
 use rocket::State;
 
 // Import the prelude module to get all the necessary imports
-use octoapp::{ghrocket::OctoAppResult, prelude::*};
+use octoapp::{octorocket::OctoAppResult, prelude::*};
 
 /// The webhook route for GitHub events
 ///
